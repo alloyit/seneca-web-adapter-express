@@ -96,6 +96,17 @@ function handleRoute(seneca, options, request, reply, route, next) {
       }
     }
 
+    // Note! This flag should be used only for legacy purposes: it allows Seneca 2.x applications run with Seneca 3.x library.
+    // It flats all args into the main payload object as with Seneca <= 2.x (skipping "role" and "cmd" values for safety reasons)
+    if (options.withFlattenArgs) {
+      const tmp = Object.assign({}, payload.args.query || {});
+      Object.assign(tmp, payload.args.params || {});
+      Object.assign(tmp, payload.args.body || {});
+      delete tmp.role;
+      delete tmp.cmd;
+      Object.assign(payload, tmp);
+    }
+
     // Note! request$ and response$ will be stripped
     // if the message is sent over transport.
 
